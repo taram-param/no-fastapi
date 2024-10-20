@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "no-fastapi"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.0"
+aiokafka = "^0.11.0"
+pydantic-settings = "^2.3.4"
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.7"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.31"}
+asyncpg = "^0.29.0"
+alembic = "^1.13.2"
+isort = "^5.13.2"
+ruff = "^0.6.4"
+pytest-env = "^1.1.4"
+psycopg = "^3.2.1"
+pytest-postgresql = "^6.1.1"
+pytest-mock = "^3.14.0"
+joserfc = "^1.0.0"
+passlib = "^1.7.4"
+bcrypt = "^4.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+target-version = "py311"
+lint.select = [
+  "E", "W",
+  "F",
+  "I",
+  "N",
+]
+line-length = 100
+extend-exclude = ["**/migrations/*", "**/settings/*", "**/alembic/*"]
+ignore = ["D", "RUF", "ANN204", "ANN201"]
