@@ -45,7 +45,7 @@ async def test_create_user(client: AsyncClient, session: AsyncSession):
             "last_name": "Guy",
             "age": 20,
             "addresses": [{"email_address": "some@gmail.com"}],
-            "password": "asafqewoijfds"
+            "password": "asafqewoijfds",
         },
     )
 

@@ -40,7 +40,7 @@ class KafkaService:
                 topic,
                 bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
                 value_deserializer=self._deserialize,
-                group_id="control_service"
+                group_id="control_service",
             )
             await consumer.start()
             self._consumers[topic] = consumer

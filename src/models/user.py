@@ -14,9 +14,7 @@ user_book_table = Table(
 class User(Base):
     __tablename__ = "user__user"
 
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, index=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
     first_name: Mapped[str | None] = mapped_column()
     last_name: Mapped[str | None] = mapped_column()
     age: Mapped[int | None] = mapped_column()
@@ -24,9 +22,7 @@ class User(Base):
     addresses: Mapped[list["Address"]] = relationship(
         back_populates="user", cascade="all, delete-orphan", lazy="selectin"
     )
-    books: Mapped[list["Book"]] = relationship(
-        secondary=user_book_table, back_populates="users"
-    )
+    books: Mapped[list["Book"]] = relationship(secondary=user_book_table, back_populates="users")
 
 
 class Address(Base):
@@ -43,9 +39,7 @@ class Profile(Base):
     __tablename__ = "user__profile"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("user__user.id", ondelete="CASCADE")
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("user__user.id", ondelete="CASCADE"))
     image: Mapped[str] = mapped_column()
 
     __table_args__ = (UniqueConstraint("user_id"),)
@@ -56,6 +50,4 @@ class Book(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     title: Mapped[str]
-    users: Mapped[list["User"]] = relationship(
-        secondary=user_book_table, back_populates="books"
-    )
+    users: Mapped[list["User"]] = relationship(secondary=user_book_table, back_populates="books")

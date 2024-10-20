@@ -33,12 +33,23 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 target-version = "py311"
-lint.select = [
-  "E", "W",
-  "F",
-  "I",
-  "N",
-]
 line-length = 100
 extend-exclude = ["**/migrations/*", "**/settings/*", "**/alembic/*"]
-ignore = ["D", "RUF", "ANN204", "ANN201"]
+
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+]
+ignore = [
+    "E402",
+    "I001",
+]
+
+
+[tool.ruff.lint.isort]
+known-third-party = ["fastapi", "pydantic", "sqlalchemy", "pytest", "httpx"]

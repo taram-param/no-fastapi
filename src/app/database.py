@@ -23,7 +23,9 @@ class DatabaseSessionManager:
 
     def init(self, url: str):
         self._engine = create_async_engine(url, echo=False)
-        self._sessionmaker = async_sessionmaker(autocommit=False, autoflush=False, bind=self._engine)
+        self._sessionmaker = async_sessionmaker(
+            autocommit=False, autoflush=False, bind=self._engine
+        )
 
     async def close(self):
         if self._engine is None:

@@ -6,8 +6,10 @@ from app.config import settings
 class GoogleClient:
     def get_google_oauth_url(self):
         return (
-            f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}"
-            f"&redirect_uri={settings.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
+            f"https://accounts.google.com/o/oauth2/auth"
+            f"?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}"
+            f"&redirect_uri={settings.GOOGLE_REDIRECT_URI}"
+            f"&scope=openid%20profile%20email&access_type=offline"
         )
 
     async def get_google_access_token(self, code: str):
