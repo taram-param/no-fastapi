@@ -36,6 +36,7 @@ jobs:
 
       - name: Lint
         run: |
+          source .venv/bin/activate
           cd src && ruff check .
       
       - name: Run tests
