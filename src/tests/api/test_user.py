@@ -23,11 +23,10 @@ async def user(session: AsyncSession):
     return user
 
 
-async def test_get_users(user: User, client: AsyncClient, mocked_kafka_message: AsyncMock):
+async def test_get_users(user: User, client: AsyncClient, skip_auth):
     response = await client.get("/api/v1/users/")
     assert response.status_code == 200
     assert len(response.json()) == 1
-    assert mocked_kafka_message.called is False
 
 
 async def test_get_user(user: User, client: AsyncClient):

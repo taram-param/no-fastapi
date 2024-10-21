@@ -14,7 +14,6 @@ load_dotenv()
 def init_app(is_test=False):
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        # Always initialize the database, but use different URLs for test and non-test
         if is_test:
             sessionmanager.init(settings.TEST_DATABASE_URL)
         else:
