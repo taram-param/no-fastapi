@@ -11,7 +11,7 @@ class UserDAO(BaseDAO):
         "addresses": [Address],
     }
 
-    async def create(self, data: dict):
+    async def create(self, data: dict) -> User:
         user = self.model()
         if data.get("password"):
             data["password"] = hash_password(data["password"])
@@ -22,7 +22,7 @@ class UserDAO(BaseDAO):
 
         return user
 
-    async def get_by_email(self, email):
+    async def get_by_email(self, email) -> User | None:
         address = await self.s.scalar(
             select(Address).join(Address.user).where(Address.email_address == email)
         )

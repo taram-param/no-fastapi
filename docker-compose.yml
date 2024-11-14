@@ -1,17 +1,15 @@
 services:
-  control_service:
+  web:
     build:
       context: ./
       dockerfile: Dockerfile
-    hostname: control_service
-    container_name: control_service
     depends_on:
       kafka:
         condition: service_healthy
       db:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - 8000:8000
     environment:
       - MY_NAME="Spiderweb Control"
     env_file:
@@ -25,8 +23,10 @@ services:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
     ports:
-      - "8080:8080"
-    restart: always
+      - 8080:8080
+    depends_on:
+      kafka:
+        condition: service_healthy
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
@@ -38,8 +38,8 @@ services:
     container_name: kafka
     restart: "no"
     ports:
-      - "2181:2181"
-      - "9093:9093"
+      - 2181:2181
+      - 9093:9093
     environment:
       KAFKA_LISTENERS: "INTERNAL://:29092,EXTERNAL://:9093"
       KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9093"
@@ -72,6 +72,43 @@ services:
       retries: 3
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - my-net
+  
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - my-net
+
+  celery:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: poetry run celery -A app.celery worker --beat --loglevel=info
+    volumes:
+      - ./src:/srv
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - my-net
+  
+  flower:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: poetry run celery -A app.celery flower --port=5555
+    volumes:
+      - ./src:/srv
+    env_file:
+      - .env
+    ports:
+      - 5555:5555
+    depends_on:
+      - redis
     networks:
       - my-net
 
