@@ -6,6 +6,7 @@ from app.config import settings
 from app.database import sessionmanager
 from services.oauth import get_user
 from main import init_app
+from app.redis import redis_client
 
 
 @pytest.fixture(scope="session")
@@ -41,6 +42,11 @@ async def setup_database():
     yield
     async with sessionmanager.connect() as connection:
         await sessionmanager.drop_all(connection)
+
+
+@pytest.fixture(scope="function", autouse=True)
+async def invalidate_redis():
+    await redis_client.flushdb()
 
 
 @pytest.fixture(scope="function")

@@ -25,7 +25,7 @@ async def get_users(
     return users
 
 
-@router.get("/{user_id}/", response_model=user_response.UserSchema)
+@router.get("/{user_id}", response_model=user_response.UserSchema)
 async def get_user(
     user_id: int,
     s: AsyncSession = Depends(get_db),
@@ -51,7 +51,7 @@ async def create_user(
     return user
 
 
-@router.put("/{user_id}/", response_model=user_response.UserSchema)
+@router.put("/{user_id}", response_model=user_response.UserSchema)
 async def update_user(
     user_id: int,
     payload: user_request.UpdateUserSchema,
@@ -67,7 +67,7 @@ async def update_user(
     return user
 
 
-@router.delete("/{user_id}/")
+@router.delete("/{user_id}")
 async def delete_user(
     user_id: int,
     s: AsyncSession = Depends(get_db),

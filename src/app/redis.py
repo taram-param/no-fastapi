@@ -25,10 +25,10 @@ class RedisCache:
         many: bool = False,
         expiration: int = 60,
     ) -> None:
-        serialized_data = self._serialize_data(data, schema, many)
+        serialized_data = self._serialize(data, schema, many)
         await self.redis_client.set(key, serialized_data, ex=expiration)
 
-    async def _serialize(
+    def _serialize(
         self,
         data: Any,
         schema: ExtendedBaseModel | None = None,
