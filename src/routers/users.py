@@ -3,10 +3,10 @@ from fastapi.routing import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.decorators import TransactionAtomic
 from dao.user import UserDAO
 from schemas.requests import user as user_request
 from schemas.responses import user as user_response
+from app.redis import RedisCache, get_redis_client
 
 router = APIRouter()
 
@@ -15,8 +15,12 @@ router = APIRouter()
 async def get_users(
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
+    redis_cache: RedisCache = Depends(get_redis_client),
 ):
-    users = await user_dao.all()
+    users = await redis_cache.get("users")
+    if not users:
+        users = await user_dao.all()
+        await redis_cache.set("users", users, schema=user_response.UserSchema, many=True)
 
     return users
 
@@ -37,7 +41,6 @@ async def create_user(
     payload: user_request.CreateUserSchema,
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
-    transaction_atomic: TransactionAtomic = Depends(TransactionAtomic),
 ):
     user_dao = user_dao
     data = payload.model_dump()
@@ -54,7 +57,6 @@ async def update_user(
     payload: user_request.UpdateUserSchema,
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
-    # transaction_atomic: TransactionAtomic = Depends(TransactionAtomic),
 ):
     user_dao = user_dao
     data = payload.model_dump(exclude_unset=True)

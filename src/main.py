@@ -5,7 +5,7 @@ from fastapi import Depends, FastAPI
 
 from app.config import settings
 from app.database import sessionmanager
-from services.kafka_service import kafka_service
+from app.kafka_service import kafka_service
 from services.oauth import get_user
 
 load_dotenv()

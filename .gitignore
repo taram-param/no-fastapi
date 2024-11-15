@@ -21,3 +21,5 @@ site_build
 venv
 docs.zip
 archive.zip
+celerybeat-schedule
+.ruff_cache

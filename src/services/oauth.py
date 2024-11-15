@@ -14,7 +14,7 @@ from models.user import User
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
-
+# TODO: Profile the auth process and add cache if possible
 security = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/swagger_login")
 
 
