@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import sessionmanager
@@ -25,6 +26,14 @@ def init_app(is_test=False):
         await sessionmanager.close()
 
     app = FastAPI(title="FastAPI server", lifespan=lifespan)
+    # Allow all origins, headers, and methods
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Update this to specific origins in production
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     from routers import auth, users
 

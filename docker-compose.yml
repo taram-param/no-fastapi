@@ -56,7 +56,7 @@ services:
       retries: 15
     networks:
       - my-net
-    
+
   db:
     image: postgres:15.3
     expose:
@@ -74,7 +74,7 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - my-net
-  
+
   redis:
     image: redis:latest
     ports:
@@ -95,7 +95,7 @@ services:
       - redis
     networks:
       - my-net
-  
+
   flower:
     build:
       context: ./
@@ -112,9 +112,26 @@ services:
     networks:
       - my-net
 
+  locust:
+    build:
+      context: .
+      dockerfile: locust/Dockerfile
+    container_name: locust
+    volumes:
+      - ./locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py -H http://locust:8089
+    depends_on:
+      - web
+    ports:
+      - 8089:8089
+    networks: 
+      - my-net
+    env_file:
+    - .env
+
 networks:
   my-net:
     external: true
-  
+
 volumes:
   pg_data:
