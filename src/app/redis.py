@@ -11,11 +11,13 @@ class RedisCache:
     def __init__(self, redis_client: redis.Redis):
         self.redis_client = redis_client
 
-    async def get(self, key: str) -> None | Any:
+    async def get(self, key: str, schema: ExtendedBaseModel | None = None) -> None | Any:
         data = await self.redis_client.get(key)
         if data is None:
             return None
-        return json.loads(data)
+
+        result = self._deserialize(data, schema)
+        return result
 
     async def set(
         self,
@@ -36,11 +38,28 @@ class RedisCache:
     ):
         if schema:
             data = (
-                [schema.model_validate(item, from_attributes=True).model_dump() for item in data]
+                [
+                    schema.model_validate(item, from_attributes=True).model_dump(mode='json')
+                    for item in data
+                ]
                 if many
-                else schema.model_validate(data, from_attributes=True).model_dump()
+                else schema.model_validate(data, from_attributes=True).model_dump(mode='json')
             )
         return json.dumps(data)
+
+    def _deserialize(
+        self,
+        data: Any,
+        schema: ExtendedBaseModel | None = None,
+    ):
+        data = json.loads(data)
+        if schema:
+            data = (
+                [schema.model_validate(item, from_attributes=True) for item in data]
+                if isinstance(data, list)
+                else schema.model_validate(data, from_attributes=True)
+            )
+        return data
 
 
 def get_redis_client():

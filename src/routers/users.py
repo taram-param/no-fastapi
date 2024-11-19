@@ -6,7 +6,6 @@ from app.database import get_db
 from dao.user import UserDAO
 from schemas.requests import user as user_request
 from schemas.responses import user as user_response
-from app.redis import RedisCache, get_redis_client
 
 router = APIRouter()
 
@@ -15,12 +14,8 @@ router = APIRouter()
 async def get_users(
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
-    redis_cache: RedisCache = Depends(get_redis_client),
 ):
-    users = await redis_cache.get("users")
-    if not users:
-        users = await user_dao.all()
-        await redis_cache.set("users", users, schema=user_response.UserSchema, many=True)
+    users = await user_dao.all()
 
     return users
 
@@ -71,8 +66,7 @@ async def delete_user(
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
 ):
-    users = await user_dao.all()
-    for user in users:
-        await user_dao.delete(user.id)
+    await user_dao.delete(user_id)
+
     await s.commit()
     return {"status": "ok"}

@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,8 +50,6 @@ class BaseDAO:
 
     async def get(self, model_id: int):
         result = await self.s.get(self.model, model_id)
-        if result is None:
-            raise HTTPException(404, "User not found")
 
         return result
 
