@@ -4,9 +4,9 @@ from sqlalchemy.exc import ProgrammingError
 
 from app.config import settings
 from app.database import sessionmanager
-from services.oauth import get_user
-from main import init_app
 from app.redis import redis_client
+from main import init_app
+from services.oauth import get_user
 
 
 @pytest.fixture(scope="session")

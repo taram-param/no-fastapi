@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import get_db
-from app.redis import get_redis_client, RedisCache
+from app.redis import RedisCache, get_redis_client
 from dao.user import UserDAO
 from schemas.responses.user import UserSchema
 
