@@ -9,12 +9,13 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import get_db
+from app.redis import get_redis_client, RedisCache
 from dao.user import UserDAO
-from models.user import User
+from schemas.responses.user import UserSchema
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
-# TODO: Profile the auth process and add cache if possible
+
 security = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/swagger_login")
 
 
@@ -76,7 +77,7 @@ def create_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_user(token: str = Depends(security), s: Session = Depends(get_db)) -> User:
+async def get_user(token: str = Depends(security), s: Session = Depends(get_db)) -> UserSchema:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -101,19 +102,26 @@ async def get_user(token: str = Depends(security), s: Session = Depends(get_db))
     except JoseError:
         raise credentials_exception
 
-    user = await UserDAO(s).get(user_id)
+    redis_cache: RedisCache = get_redis_client()
 
+    user_from_cache = await redis_cache.get(f"user:{user_id}", UserSchema)
+    if user_from_cache:
+        return user_from_cache
+
+    user = await UserDAO(s).get(user_id)
     if user is None:
         raise credentials_exception
 
-    return user
+    user_schema = UserSchema.model_validate(user, from_attributes=True)
+    await redis_cache.set(f"user:{user.id}", user_schema, UserSchema)
+    return user_schema
 
 
 class RoleChecker:
     def __init__(self, allowed_roles):
         self.allowed_roles = allowed_roles
 
-    def __call__(self, user: Annotated[User, Depends(get_user)]):
+    def __call__(self, user: Annotated[UserSchema, Depends(get_user)]):
         if user.role == "superuser" or user.role in self.allowed_roles:
             return user
 
