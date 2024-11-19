@@ -1,6 +1,7 @@
-from typing import Any
-import redis.asyncio as redis
 import json
+from typing import Any
+
+import redis.asyncio as redis
 
 from app.schemas import ExtendedBaseModel
 
@@ -39,11 +40,11 @@ class RedisCache:
         if schema:
             data = (
                 [
-                    schema.model_validate(item, from_attributes=True).model_dump(mode='json')
+                    schema.model_validate(item, from_attributes=True).model_dump(mode="json")
                     for item in data
                 ]
                 if many
-                else schema.model_validate(data, from_attributes=True).model_dump(mode='json')
+                else schema.model_validate(data, from_attributes=True).model_dump(mode="json")
             )
         return json.dumps(data)
 
