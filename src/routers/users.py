@@ -42,7 +42,6 @@ async def create_user(
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
 ):
-    user_dao = user_dao
     data = payload.model_dump()
     user = await user_dao.create(data)
 
@@ -58,7 +57,6 @@ async def update_user(
     s: AsyncSession = Depends(get_db),
     user_dao: UserDAO = Depends(UserDAO),
 ):
-    user_dao = user_dao
     data = payload.model_dump(exclude_unset=True)
     user = await user_dao.update(user_id, data)
 

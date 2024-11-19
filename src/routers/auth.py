@@ -56,7 +56,7 @@ async def login(
 
     access_token = create_token(
         data={"type": "access", "user_id": user.id},
-        expires_delta=timedelta(minutes=60 * 24),
+        expires_delta=timedelta(minutes=60 * 24 * 31),
     )
     refresh_token = create_token(
         data={"type": "refresh", "user_id": user.id},

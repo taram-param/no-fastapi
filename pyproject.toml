@@ -26,6 +26,7 @@ bcrypt = "^4.2.0"
 redis = "^5.2.0"
 celery = {extras = ["redis"], version = "^5.4.0"}
 flower = "^2.0.1"
+locust = "^2.32.2"
 
 
 [build-system]
@@ -37,6 +38,7 @@ build-backend = "poetry.core.masonry.api"
 target-version = "py311"
 line-length = 100
 extend-exclude = ["**/migrations/*", "**/settings/*", "**/alembic/*"]
+extend-include = ["**/locust/*"]
 
 
 [tool.ruff.lint]
