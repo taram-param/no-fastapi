@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, Table, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
+from models import diary
 
 user_book_table = Table(
     "user__user_book_table",
@@ -23,6 +24,9 @@ class User(Base):
         back_populates="user", cascade="all, delete-orphan", lazy="selectin"
     )
     books: Mapped[list["Book"]] = relationship(secondary=user_book_table, back_populates="users")
+    diaries: Mapped[list["diary.Diary"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan", lazy="selectin"
+    )
 
 
 class Address(Base):

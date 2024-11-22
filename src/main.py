@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import sessionmanager
+from app.elastic import es
 from app.kafka_service import kafka_service
 from services.oauth import get_user
 
@@ -19,17 +20,19 @@ def init_app(is_test=False):
             sessionmanager.init(settings.TEST_DATABASE_URL)
         else:
             sessionmanager.init(settings.DB_URL)
+            await es.info()
             await kafka_service.start_consumer("spiderweb")
         yield
         if not is_test:
             await kafka_service.close_all_consumers()
+            await es.es.close()
         await sessionmanager.close()
 
     app = FastAPI(title="FastAPI server", lifespan=lifespan)
-    # Allow all origins, headers, and methods
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # Update this to specific origins in production
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

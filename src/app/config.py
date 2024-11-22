@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str
 
     REDIS_URL: str
+    ELASTICSEARCH_URL: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
