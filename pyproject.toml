@@ -27,6 +27,9 @@ redis = "^5.2.0"
 celery = {extras = ["redis"], version = "^5.4.0"}
 flower = "^2.0.1"
 locust = "^2.32.2"
+elasticsearch = {extras = ["async"], version = "^8.16.0"}
+elasticsearch-dsl = {extras = ["async"], version = "^8.16.0"}
+asgiref = "^3.8.1"
 
 
 [build-system]

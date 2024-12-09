@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import sessionmanager
+from app.elastic import es
 from app.kafka_service import kafka_service
 from services.oauth import get_user
 
@@ -23,24 +24,28 @@ def init_app(is_test=False):
         yield
         if not is_test:
             await kafka_service.close_all_consumers()
+            await es.es.close()
         await sessionmanager.close()
 
     app = FastAPI(title="FastAPI server", lifespan=lifespan)
-    # Allow all origins, headers, and methods
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # Update this to specific origins in production
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
-    from routers import auth, users
+    from routers import auth, diary, users
 
     app.include_router(
         users.router, prefix="/api/v1/users", tags=["users"], dependencies=[Depends(get_user)]
     )
     app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+    app.include_router(
+        diary.router, prefix="/api/v1/diary", tags=["diary"], dependencies=[Depends(get_user)]
+    )
 
     return app
 

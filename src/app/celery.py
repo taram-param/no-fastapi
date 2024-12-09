@@ -10,6 +10,7 @@ celery_app = Celery(
     backend=redis_url,
     include=[
         "tasks.test",
+        "tasks.diary_indexing",
     ],
 )
 

@@ -58,7 +58,7 @@ services:
       - my-net
 
   db:
-    image: postgres:15.3
+    image: postgres:17
     expose:
       - 5432
     environment:
@@ -66,7 +66,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=db
     healthcheck:
-      test: pg_isready
+      test: pg_isready -U $$POSTGRES_USER
       interval: 10s
       timeout: 3s
       retries: 3
@@ -74,6 +74,17 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - my-net
+  
+  elasticsearch:
+    image: elasticsearch:8.16.0
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - my-net
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
 
   redis:
     image: redis:latest
