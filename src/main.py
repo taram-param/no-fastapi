@@ -20,7 +20,6 @@ def init_app(is_test=False):
             sessionmanager.init(settings.TEST_DATABASE_URL)
         else:
             sessionmanager.init(settings.DB_URL)
-            await es.info()
             await kafka_service.start_consumer("spiderweb")
         yield
         if not is_test:
@@ -38,12 +37,15 @@ def init_app(is_test=False):
         allow_headers=["*"],
     )
 
-    from routers import auth, users
+    from routers import auth, diary, users
 
     app.include_router(
         users.router, prefix="/api/v1/users", tags=["users"], dependencies=[Depends(get_user)]
     )
     app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+    app.include_router(
+        diary.router, prefix="/api/v1/diary", tags=["diary"], dependencies=[Depends(get_user)]
+    )
 
     return app
 

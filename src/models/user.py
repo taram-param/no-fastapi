@@ -25,7 +25,7 @@ class User(Base):
     )
     books: Mapped[list["Book"]] = relationship(secondary=user_book_table, back_populates="users")
     diaries: Mapped[list["diary.Diary"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan", lazy="selectin"
+        back_populates="user", cascade="all, delete-orphan"
     )
 
 
