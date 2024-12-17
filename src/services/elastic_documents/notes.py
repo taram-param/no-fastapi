@@ -6,7 +6,7 @@ async_connections.add_connection("default", es.es)
 
 
 class Note(AsyncDocument):
-    title = Text(analyzer="snowball", fields={"raw": Keyword})
+    title = Text(analyzer="snowball", fields={"raw": Keyword()})
     content = Text(analyzer="snowball")
     created_at = Date()
     diary_id = Integer(required=True)

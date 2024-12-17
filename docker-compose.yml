@@ -8,10 +8,12 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
     ports:
       - 8000:8000
-    environment:
-      - MY_NAME="Spiderweb Control"
     env_file:
       - .env
     volumes:
@@ -61,6 +63,8 @@ services:
     image: postgres:17
     expose:
       - 5432
+    ports:
+      - 5433:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -74,7 +78,7 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - my-net
-  
+
   elasticsearch:
     image: elasticsearch:8.16.0
     ports:
@@ -135,10 +139,10 @@ services:
       - web
     ports:
       - 8089:8089
-    networks: 
+    networks:
       - my-net
     env_file:
-    - .env
+      - .env
 
 networks:
   my-net:

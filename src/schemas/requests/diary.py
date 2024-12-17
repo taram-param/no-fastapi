@@ -8,3 +8,4 @@ class CreateDiarySchema(ExtendedBaseModel):
 class CreateNoteSchema(ExtendedBaseModel):
     title: str
     content: str
+    diary_id: int

@@ -4,7 +4,7 @@ import json
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
 from app.config import settings
-from services.dispatchers.spiderweb_dispatcher import SpiderwebDispatcher
+from services.dispatchers.kafka.spiderweb_dispatcher import SpiderwebDispatcher
 
 
 class KafkaService:
@@ -18,7 +18,10 @@ class KafkaService:
 
     async def get_producer(self):
         if self._producer is None:
-            self._producer = AIOKafkaProducer(bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS)
+            self._producer = AIOKafkaProducer(
+                bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+                enable_idempotence=True,
+            )
             await self._producer.start()
         return self._producer
 

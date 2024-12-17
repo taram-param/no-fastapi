@@ -22,7 +22,7 @@ class DatabaseSessionManager:
         self._sessionmaker: async_sessionmaker | None = None
 
     def init(self, url: str):
-        self._engine = create_async_engine(url, echo=True, pool_size=50, max_overflow=10)
+        self._engine = create_async_engine(url, echo=False, pool_size=50, max_overflow=10)
         self._sessionmaker = async_sessionmaker(
             autocommit=False, autoflush=False, bind=self._engine
         )

@@ -8,6 +8,7 @@ from dao.diary import DiaryDAO, NoteDAO
 from schemas.requests.diary import CreateNoteSchema
 from schemas.responses.diary import DiarySchema, NoteSchema
 from schemas.responses.user import UserSchema
+from services.elastic_documents.notes import Note
 from services.oauth import get_user
 
 router = APIRouter()
@@ -102,9 +103,10 @@ async def get_note(
     return result
 
 
-@router.get("/notes/", response_model=NoteSchema)
+@router.post("/notes/", response_model=NoteSchema)
 async def create_note(
     payload: CreateNoteSchema,
+    user: UserSchema = Depends(get_user),
     s: AsyncSession = Depends(get_db),
     note_dao: NoteDAO = Depends(NoteDAO),
 ):
@@ -112,5 +114,13 @@ async def create_note(
     note = await note_dao.create(data)
     await s.commit()
     await s.refresh(note)
-
+    await Note(
+        meta={"id": note.id},
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        created_at=note.created_at,
+        diary_id=note.diary_id,
+        user_id=user.id,
+    ).save()
     return note
