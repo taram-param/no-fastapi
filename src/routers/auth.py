@@ -1,6 +1,8 @@
 from datetime import timedelta
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -100,3 +102,15 @@ async def auth_google(
         "access_token": access_token,
         "refresh_token": refresh_token,
     }
+
+
+@router.post("/swagger_login")
+async def swagger_login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    s: AsyncSession = Depends(get_db),
+):
+    payload = auth.LoginUserSchema(email=form_data.username, password=form_data.password)
+
+    result = await login(payload=payload, s=s)
+
+    return result

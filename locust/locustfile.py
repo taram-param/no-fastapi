@@ -20,7 +20,7 @@ class FastAPIUser(HttpUser):
             "/api/v1/diary/notes/",
             headers={"Authorization": f"Bearer {BEARER_TOKEN}"},
             json={
-                "diary_id": 6,
+                "diary_id": 1,
                 "title": f"title {unique_str}",
                 "content": f"content {unique_str}",
             },
