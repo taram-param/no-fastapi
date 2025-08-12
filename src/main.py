@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import sessionmanager
 from app.elastic import es
-from app.kafka_service import kafka_service
 from services.oauth import get_user
 
 load_dotenv()
@@ -20,10 +19,8 @@ def init_app(is_test=False):
             sessionmanager.init(settings.TEST_DATABASE_URL)
         else:
             sessionmanager.init(settings.DB_URL)
-            await kafka_service.start_consumer("spiderweb")
         yield
         if not is_test:
-            await kafka_service.close_all_consumers()
             await es.es.close()
         await sessionmanager.close()
 
@@ -46,6 +43,9 @@ def init_app(is_test=False):
     app.include_router(
         diary.router, prefix="/api/v1/diary", tags=["diary"], dependencies=[Depends(get_user)]
     )
+    from kafka_routers.diary import router as kafka_router
+
+    app.include_router(kafka_router)
 
     return app
 

@@ -1,9 +1,13 @@
+from typing import Annotated
+
 from fastapi import Depends
 from fastapi.routing import APIRouter
+from faststream.kafka.fastapi import KafkaBroker
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.elastic import es
+from app.kafka_router import get_broker
 from dao.diary import DiaryDAO, NoteDAO
 from schemas.requests.diary import CreateNoteSchema
 from schemas.responses.diary import DiarySchema, NoteSchema
@@ -106,6 +110,7 @@ async def get_note(
 @router.post("/notes/", response_model=NoteSchema)
 async def create_note(
     payload: CreateNoteSchema,
+    broker: Annotated[KafkaBroker, Depends(get_broker)],
     user: UserSchema = Depends(get_user),
     s: AsyncSession = Depends(get_db),
     note_dao: NoteDAO = Depends(NoteDAO),
@@ -123,4 +128,6 @@ async def create_note(
         diary_id=note.diary_id,
         user_id=user.id,
     ).save()
+
+    await broker.publisher("test").publish({"msg": "Created Note"})
     return note
